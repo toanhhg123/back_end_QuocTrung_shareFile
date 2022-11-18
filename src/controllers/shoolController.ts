@@ -1,7 +1,7 @@
-import { Request, Response } from "express";
-import School from "../models/School";
-import { schools } from "../data/school";
-import { IUserRequest } from "./../Interfaces/user";
+import { Request, Response } from 'express';
+import School from '../models/School';
+import { schools } from '../data/school';
+import { IUserRequest } from './../Interfaces/user';
 
 export const seedSchool = async (
   req: Request,

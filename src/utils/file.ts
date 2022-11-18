@@ -1,6 +1,6 @@
-import dotenv from "dotenv";
-import fs from "fs";
-import { drive_v3, google } from "googleapis";
+import dotenv from 'dotenv';
+import fs from 'fs';
+import { drive_v3, google } from 'googleapis';
 dotenv.config();
 
 const GOOGLE_CLOUD_CLIENT_ID = process.env.GOOGLE_CLOUD_CLIENT_ID as string;
@@ -17,7 +17,7 @@ type PartialDriveFile = {
 };
 
 type SearchResultResponse = {
-  kind: "drive#fileList";
+  kind: 'drive#fileList';
   nextPageToken: string;
   incompleteSearch: boolean;
   files: PartialDriveFile[];
@@ -30,7 +30,7 @@ const oauth2Client = new google.auth.OAuth2(
 );
 
 const drive = google.drive({
-  version: "v3",
+  version: 'v3',
   auth: oauth2Client,
 });
 oauth2Client.setCredentials({
@@ -65,17 +65,17 @@ export class GoogleDriveService {
     client.setCredentials({ refresh_token: refreshToken });
 
     return google.drive({
-      version: "v3",
+      version: 'v3',
       auth: client,
     });
   }
 
   createFolder(folderName: string) {
     return this.driveClient.files.create({
-      fields: "id,name",
+      fields: 'id,name',
       requestBody: {
         name: folderName,
-        mimeType: "application/vnd.google-apps.folder",
+        mimeType: 'application/vnd.google-apps.folder',
       },
     });
   }
@@ -87,7 +87,7 @@ export class GoogleDriveService {
       this.driveClient.files.list(
         {
           q: `mimeType='application/vnd.google-apps.folder' and name='${folderName}'`,
-          fields: "files(id, name)",
+          fields: 'files(id, name)',
         },
         (err, res) => {
           if (err) {
@@ -123,10 +123,11 @@ export class GoogleDriveService {
     return res;
   }
 
-  async getAllFile(folder: string = "") {
+  async getAllFile(folder: string = '') {
     const folders = (await this.searchFolder(folder)) || [];
-    if (!folder.length) throw new Error("not found folder");
+    if (!folder.length) throw new Error('not found folder');
     const res = await this.driveClient.files.list({
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       q: `'${folders[0].id}' in parents and trashed = false`,
     });
 
@@ -138,14 +139,14 @@ export class GoogleDriveService {
       await this.driveClient.permissions.create({
         fileId,
         requestBody: {
-          role: "reader",
-          type: "anyone",
+          role: 'reader',
+          type: 'anyone',
         },
       });
 
       const getUrl = await drive.files.get({
         fileId,
-        fields: "webViewLink, webContentLink",
+        fields: 'webViewLink, webContentLink',
       });
 
       return getUrl;

@@ -40,9 +40,9 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { email, password } = req.body;
         const user = yield user_1.default.findOne({ email }).exec();
         if (!user)
-            throw new Error("Not Found Email");
+            throw new Error('Not Found Email');
         if (!(yield user.validatePassword(password)))
-            throw new Error("incorrect password");
+            throw new Error('incorrect password');
         const [accessToken, refreshToken] = generateTokenUser(user);
         yield (0, jwt_1.validateToken)(accessToken);
         const session = new session_1.default({

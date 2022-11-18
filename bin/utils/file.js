@@ -26,7 +26,7 @@ const GOOGLE_CLOUD_REDIRECT_URL = process.env
     .GOOGLE_CLOUD_REDIRECT_URL;
 const oauth2Client = new googleapis_1.google.auth.OAuth2(GOOGLE_CLOUD_CLIENT_ID, GOOGLE_CLOUD_CLIENT_SECRET, GOOGLE_CLOUD_REDIRECT_URL);
 const drive = googleapis_1.google.drive({
-    version: "v3",
+    version: 'v3',
     auth: oauth2Client,
 });
 oauth2Client.setCredentials({
@@ -40,16 +40,16 @@ class GoogleDriveService {
         const client = new googleapis_1.google.auth.OAuth2(clientId, clientSecret, redirectUri);
         client.setCredentials({ refresh_token: refreshToken });
         return googleapis_1.google.drive({
-            version: "v3",
+            version: 'v3',
             auth: client,
         });
     }
     createFolder(folderName) {
         return this.driveClient.files.create({
-            fields: "id,name",
+            fields: 'id,name',
             requestBody: {
                 name: folderName,
-                mimeType: "application/vnd.google-apps.folder",
+                mimeType: 'application/vnd.google-apps.folder',
             },
         });
     }
@@ -57,7 +57,7 @@ class GoogleDriveService {
         return new Promise((resolve, reject) => {
             this.driveClient.files.list({
                 q: `mimeType='application/vnd.google-apps.folder' and name='${folderName}'`,
-                fields: "files(id, name)",
+                fields: 'files(id, name)',
             }, (err, res) => {
                 if (err) {
                     return reject(err);
@@ -83,12 +83,13 @@ class GoogleDriveService {
             return res;
         });
     }
-    getAllFile(folder = "") {
+    getAllFile(folder = '') {
         return __awaiter(this, void 0, void 0, function* () {
             const folders = (yield this.searchFolder(folder)) || [];
             if (!folder.length)
-                throw new Error("not found folder");
+                throw new Error('not found folder');
             const res = yield this.driveClient.files.list({
+                // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
                 q: `'${folders[0].id}' in parents and trashed = false`,
             });
             return res;
@@ -100,13 +101,13 @@ class GoogleDriveService {
                 yield this.driveClient.permissions.create({
                     fileId,
                     requestBody: {
-                        role: "reader",
-                        type: "anyone",
+                        role: 'reader',
+                        type: 'anyone',
                     },
                 });
                 const getUrl = yield drive.files.get({
                     fileId,
-                    fields: "webViewLink, webContentLink",
+                    fields: 'webViewLink, webContentLink',
                 });
                 return getUrl;
             }

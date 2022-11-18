@@ -1,18 +1,18 @@
-import { Request, Response } from "express";
+import { Request, Response } from 'express';
 import {
   IUserRegister,
   IUserRequest,
   IUserResponse,
-} from "./../Interfaces/user";
+} from './../Interfaces/user';
 import {
   generateRefreshToken,
   generateToken,
   validateToken,
-} from "./../utils/jwt";
-import User, { IUser } from "../models/user";
-import env from "dotenv";
-import Session from "../models/session";
-import { users } from "../data/user";
+} from './../utils/jwt';
+import User, { IUser } from '../models/user';
+import env from 'dotenv';
+import Session from '../models/session';
+import { users } from '../data/user';
 
 env.config();
 
@@ -49,9 +49,9 @@ export const login = async (
 
     const user = await User.findOne({ email }).exec();
 
-    if (!user) throw new Error("Not Found Email");
+    if (!user) throw new Error('Not Found Email');
     if (!(await user.validatePassword(password)))
-      throw new Error("incorrect password");
+      throw new Error('incorrect password');
 
     const [accessToken, refreshToken] = generateTokenUser(user);
     await validateToken(accessToken);

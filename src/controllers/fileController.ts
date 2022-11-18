@@ -2,6 +2,8 @@ import { Request, Response } from 'express';
 import googleDriver from '../utils/file';
 import { IUserRequest } from '../Interfaces/user';
 import FileSchema, { IFile } from '../models/file';
+import fs from 'fs';
+
 export const uploadFile = async (
   req: Request,
   res: Response
@@ -99,18 +101,84 @@ export const getAllFilePublic = async (
 };
 
 export const uploadFileServer = async (
-  req: Request<{}, any, IFile>,
+  req: Request<unknown, any, IFile>,
   res: Response
 ): Promise<Response<any>> => {
   try {
+    const user = (req as IUserRequest).user;
+    if (!user) throw new Error('not found user');
     const file = req.file;
+    console.log(file);
+
     const fileBody = req.body;
     if (!file) throw new Error('not found file create');
+    const { filename } = file;
+    fileBody.type = filename.split('.').pop() || 'other';
+    fileBody.fileId = filename;
+    fileBody.linkDriver = filename;
+    fileBody.isAcctive = true;
+    fileBody.userId = user._id;
+    const fileNew = await FileSchema.create(fileBody);
+    return res.json(fileNew);
+  } catch (error: any) {
+    return res.status(400).json({ message: error.message });
+  }
+};
 
-    const { originalname } = file;
-    fileBody.type = originalname.split('.')[-1];
-    const fileNew = FileSchema.create({});
-    return res.json(req.file);
+export const getAllFilePublicServer = async (
+  req: Request<unknown, unknown, unknown, { subjectId: string }>,
+  res: Response
+): Promise<Response<any>> => {
+  try {
+    const { subjectId } = req.query;
+    const objQuery = {} as IFile;
+    objQuery.isAcctive = true;
+    subjectId && (objQuery.subjects = subjectId);
+    console.log(objQuery);
+
+    const files = await FileSchema.find(objQuery as any).populate('subjects');
+    return res.json(files);
+  } catch (error: any) {
+    return res.status(400).json({ message: error.message });
+  }
+};
+
+export const updateFile = async (
+  req: Request<unknown, unknown, IFile>,
+  res: Response
+): Promise<Response<any>> => {
+  try {
+    const user = (req as IUserRequest).user;
+    if (!user) throw new Error('not found user');
+
+    const file = await FileSchema.findOne({ _id: req.body.id });
+    if (!file) throw new Error('not found file');
+
+    file.name = req.body.name || file.name;
+    file.desc = req.body.desc;
+
+    return res.json(file);
+  } catch (error: any) {
+    return res.status(400).json({ message: error.message });
+  }
+};
+
+export const deleteFile = async (
+  req: Request<{ id: string }, unknown>,
+  res: Response
+): Promise<Response<any>> => {
+  try {
+    console.log({ id: req.params });
+
+    const user = (req as IUserRequest).user;
+    if (!user) throw new Error('not found user');
+
+    const file = await FileSchema.findOneAndDelete({ _id: req.params.id });
+    if (!file) throw new Error('not found file');
+
+    fs.unlinkSync('src/uploads/' + file.fileId);
+
+    return res.json(file);
   } catch (error: any) {
     return res.status(400).json({ message: error.message });
   }

@@ -12,6 +12,7 @@
         "@types/mongoose": "^5.11.97",
         "@types/multer": "^1.4.7",
         "@types/nodemon": "^1.19.2",
+        "@types/uuid": "^8.3.4",
         "@typescript-eslint/eslint-plugin": "^5.40.1",
         "@typescript-eslint/parser": "^5.40.1",
         "bcrypt": "^5.1.0",
@@ -24,7 +25,8 @@
         "googleapis": "^108.0.1",
         "jsonwebtoken": "^8.5.1",
         "mongoose": "^6.6.5",
-        "multer": "^1.4.5-lts.1"
+        "multer": "^1.4.5-lts.1",
+        "uuid": "^9.0.0"
     },
     "scripts": {
         "start": "node ./bin/index.js",

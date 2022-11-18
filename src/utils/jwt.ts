@@ -1,26 +1,26 @@
-import "dotenv/config";
-import { sign, SignOptions, verify, VerifyOptions } from "jsonwebtoken";
-import { IUserResponse } from "../Interfaces/user";
+import 'dotenv/config';
+import { sign, SignOptions, verify, VerifyOptions } from 'jsonwebtoken';
+import { IUserResponse } from '../Interfaces/user';
 
 type PayLoad = string | object | Buffer;
 
-const privateKey = process.env.JWT_PRIVATEKEY || "No key";
+const privateKey = process.env.JWT_PRIVATEKEY || 'No key';
 
 console.log({ privateKey });
 
 export const generateToken = (payload: PayLoad): string => {
   const signInOptions: SignOptions = {
-    expiresIn: "1d",
+    expiresIn: '1d',
   };
 
   return sign(payload, privateKey, signInOptions);
 };
 
 export const generateRefreshToken = (payload: PayLoad): string => {
-  const privateKey = process.env.JWT_PRIVATEKEY || "No key";
+  const privateKey = process.env.JWT_PRIVATEKEY || 'No key';
 
   const signInOptions: SignOptions = {
-    expiresIn: "10d",
+    expiresIn: '10d',
   };
 
   return sign(payload, privateKey, signInOptions);
@@ -29,7 +29,7 @@ export const generateRefreshToken = (payload: PayLoad): string => {
 export function validateToken(token: string): Promise<IUserResponse> {
   return new Promise((resolve, reject) => {
     const verifyOptions: VerifyOptions = {
-      algorithms: ["RS256"],
+      algorithms: ['RS256'],
     };
 
     try {
