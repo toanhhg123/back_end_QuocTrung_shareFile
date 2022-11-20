@@ -35,7 +35,7 @@ fileSchema.pre<IFile>('validate', { document: true }, async function (next) {
     if (!this.name && this.name.length < 10) {
       next(new Error('Invalid file name'));
       fs.unlinkSync('src/uploads/' + this.fileId);
-    } else if (!(await subjects.findOne({ name: this.subjects }))) {
+    } else if (!(await subjects.findOne({ _id: this.subjects }))) {
       fs.unlinkSync('src/uploads/' + this.fileId);
       next(new Error('not found subjects'));
     } else next();

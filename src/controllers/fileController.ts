@@ -118,6 +118,8 @@ export const uploadFileServer = async (
     fileBody.linkDriver = filename;
     fileBody.isAcctive = true;
     fileBody.userId = user._id;
+    console.log({ fileBody });
+
     const fileNew = await FileSchema.create(fileBody);
     return res.json(fileNew);
   } catch (error: any) {
@@ -126,15 +128,15 @@ export const uploadFileServer = async (
 };
 
 export const getAllFilePublicServer = async (
-  req: Request<unknown, unknown, unknown, { subjectId: string }>,
+  req: Request<unknown, unknown, unknown, { subjects: string; type: string }>,
   res: Response
 ): Promise<Response<any>> => {
   try {
-    const { subjectId } = req.query;
+    const { subjects, type } = req.query;
     const objQuery = {} as IFile;
     objQuery.isAcctive = true;
-    subjectId && (objQuery.subjects = subjectId);
-    console.log(objQuery);
+    subjects && (objQuery.subjects = subjects);
+    type && (objQuery.type = type);
 
     const files = await FileSchema.find(objQuery as any).populate('subjects');
     return res.json(files);
