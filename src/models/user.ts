@@ -59,9 +59,6 @@ userSchema.pre<IUser>('validate', { document: true }, async function (next) {
   if (this.passHash.length < 6)
     next(new Error('Passwords are between 6 and 12 characters long'));
 
-  if (!this.schoolId || !(await School.findById(this.schoolId)))
-    next(new Error('School not found'));
-
   if (!this.role || !roles.includes(this.role)) next(new Error('Invalid role'));
   else next();
 });

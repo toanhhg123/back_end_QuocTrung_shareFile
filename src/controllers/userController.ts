@@ -55,17 +55,11 @@ export const login = async (
 
     const [accessToken, refreshToken] = generateTokenUser(user);
     await validateToken(accessToken);
-    const session = new Session({
-      idUser: user._id,
-      refreshToken,
-      expTime: new Date().setDate(new Date().getDate() + 10),
-    });
-
-    await session.save();
 
     return res.json({
       accessToken,
-      session,
+      refreshToken,
+      userInfo: user,
     });
   } catch (error: any) {
     return res.status(400).json({ message: error?.message });
@@ -122,6 +116,54 @@ export const getInfoUser = async (
     const user = req as IUserRequest;
 
     return res.json(user.user);
+  } catch (error: any) {
+    return res.status(400).json({ message: error.message });
+  }
+};
+
+export const getAllUserAdmin = async (
+  req: Request,
+  res: Response
+): Promise<Response<void>> => {
+  try {
+    const userReq = req as IUserRequest;
+
+    const users = await User.find({ _id: { $ne: userReq.user?._id } });
+
+    return res.json(users);
+  } catch (error: any) {
+    return res.status(400).json({ message: error.message });
+  }
+};
+
+export const createUser = async (
+  req: Request,
+  res: Response
+): Promise<Response<void>> => {
+  try {
+    console.log(new Date(req.body.dateOfBirth));
+
+    const user = new User({
+      ...req.body,
+      passHash: req.body.password,
+    });
+
+    await user.save();
+    return res.json(user);
+  } catch (error: any) {
+    return res.status(400).json({ message: error.message });
+  }
+};
+
+export const deleteUser = async (
+  req: Request,
+  res: Response
+): Promise<Response<void>> => {
+  try {
+    const { id } = req.params;
+    const user = await User.findByIdAndRemove(id);
+
+    return res.json(user);
   } catch (error: any) {
     return res.status(400).json({ message: error.message });
   }

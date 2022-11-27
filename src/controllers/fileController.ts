@@ -128,18 +128,38 @@ export const uploadFileServer = async (
 };
 
 export const getAllFilePublicServer = async (
-  req: Request<unknown, unknown, unknown, { subjects: string; type: string }>,
+  req: Request<
+    unknown,
+    unknown,
+    unknown,
+    { subjects: string; type: string; pageIndex: number; pageSize: number }
+  >,
   res: Response
 ): Promise<Response<any>> => {
   try {
-    const { subjects, type } = req.query;
+    req.query.pageIndex || (req.query.pageIndex = 1);
+    req.query.pageSize || (req.query.pageSize = 10);
+    const { subjects, type, pageIndex, pageSize } = req.query;
+    console.log(req.query);
+
     const objQuery = {} as IFile;
     objQuery.isAcctive = true;
     subjects && (objQuery.subjects = subjects);
     type && (objQuery.type = type);
 
-    const files = await FileSchema.find(objQuery as any).populate('subjects');
-    return res.json(files);
+    const files = await FileSchema.find({ type: 'mp3' })
+      .populate('subjects')
+      .skip(pageSize * (pageIndex - 1))
+      .limit(pageSize);
+    const count = await FileSchema.count(objQuery as any);
+    console.log(files);
+    return res.json({
+      files,
+      totalItem: count,
+      pageIndex,
+      pageSize,
+      pages: Math.ceil(count / pageSize),
+    });
   } catch (error: any) {
     return res.status(400).json({ message: error.message });
   }
