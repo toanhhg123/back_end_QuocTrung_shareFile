@@ -132,26 +132,34 @@ export const getAllFilePublicServer = async (
     unknown,
     unknown,
     unknown,
-    { subjects: string; type: string; pageIndex: number; pageSize: number }
+    {
+      subjects: string;
+      type: string;
+      pageIndex: number;
+      pageSize: number;
+      keyword: string;
+    }
   >,
   res: Response
 ): Promise<Response<any>> => {
   try {
     req.query.pageIndex || (req.query.pageIndex = 1);
     req.query.pageSize || (req.query.pageSize = 10);
-    const { subjects, type, pageIndex, pageSize } = req.query;
+    const { subjects, type, pageIndex, pageSize, keyword } = req.query;
     console.log(req.query);
 
     const objQuery = {} as IFile;
     objQuery.isAcctive = true;
     subjects && (objQuery.subjects = subjects);
     type && (objQuery.type = type);
+    const regex = new RegExp(req.query.keyword, 'i');
+    console.log({ regex });
 
-    const files = await FileSchema.find({ type: 'mp3' })
+    const files = await FileSchema.find({ type: 'mp3', name: regex })
       .populate('subjects')
       .skip(pageSize * (pageIndex - 1))
       .limit(pageSize);
-    const count = await FileSchema.count(objQuery as any);
+    const count = await FileSchema.count({ ...(objQuery as any), name: regex });
     console.log(files);
     return res.json({
       files,
