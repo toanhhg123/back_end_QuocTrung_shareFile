@@ -168,3 +168,22 @@ export const deleteUser = async (
     return res.status(400).json({ message: error.message });
   }
 };
+
+export const updateUser = async (
+  req: Request,
+  res: Response
+): Promise<Response<void>> => {
+  try {
+    const { id } = req.params;
+    const user = await User.findByIdAndUpdate(id, {
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      role: req.body.role,
+    });
+    if (!user) throw new Error('not found user');
+
+    return res.json(user);
+  } catch (error: any) {
+    return res.status(400).json({ message: error.message });
+  }
+};
