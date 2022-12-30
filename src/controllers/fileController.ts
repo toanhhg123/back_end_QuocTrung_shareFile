@@ -151,16 +151,18 @@ export const getAllFilePublicServer = async (
     const objQuery = {} as IFile;
     objQuery.isAcctive = true;
     subjects && (objQuery.subjects = subjects);
+    console.log(subjects);
+
     type && (objQuery.type = type);
     const regex = new RegExp(req.query.keyword, 'i');
     console.log({ regex });
 
-    const files = await FileSchema.find({ type: 'mp3', name: regex })
+    const files = await FileSchema.find({ name: regex })
       .populate('subjects')
       .skip(pageSize * (pageIndex - 1))
       .limit(pageSize);
+
     const count = await FileSchema.count({ ...(objQuery as any), name: regex });
-    console.log(files);
     return res.json({
       files,
       totalItem: count,

@@ -17,7 +17,7 @@ const router = Router();
 router.post('/upload', authorize(['USER']), upload.single('file'), uploadFile);
 router.post(
   '/uploadServer',
-  authorize(['ADMIN']),
+  authorize(['USER', 'ADMIN']),
   upload.single('file'),
   uploadFileServer
 );
