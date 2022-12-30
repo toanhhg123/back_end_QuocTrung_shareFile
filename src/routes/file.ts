@@ -14,7 +14,12 @@ import {
 import { authorize } from '../middlewares/authMiddleware';
 const router = Router();
 
-router.post('/upload', authorize(['USER']), upload.single('file'), uploadFile);
+router.post(
+  '/upload',
+  authorize(['USER', 'ADMIN']),
+  upload.single('file'),
+  uploadFile
+);
 router.post(
   '/uploadServer',
   authorize(['USER', 'ADMIN']),
@@ -22,7 +27,7 @@ router.post(
   uploadFileServer
 );
 
-router.get('/getAllFile', authorize(['USER']), getAllFile);
+router.get('/getAllFile', authorize(['USER', 'ADMIN']), getAllFile);
 router.get('/getAllFilePublic', getAllFilePublic);
 router.get('/getAllFilePublicServer', getAllFilePublicServer);
 router.get('/updateFIle', authorize(['USER', 'ADMIN']), updateFile);

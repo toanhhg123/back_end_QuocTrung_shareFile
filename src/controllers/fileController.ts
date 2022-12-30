@@ -77,7 +77,7 @@ export const getAllFile = async (
   try {
     const { user } = req as IUserRequest;
 
-    console.log(user);
+    console.log({ user });
 
     const files = await FileSchema.find({ userId: user?._id });
 
